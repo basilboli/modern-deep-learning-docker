@@ -15,6 +15,7 @@ Keep in mind that this image is big (3GB+). I considered dropping a few tools or
 - Caffe
 - Keras
 - Java JDK
+- Bazel 0.4.0
 
 TODO:
 - Torch

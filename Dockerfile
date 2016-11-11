@@ -49,7 +49,6 @@ EXPOSE 8888
 #
 RUN pip3 install --no-cache-dir --upgrade \
     https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp35-cp35m-linux_x86_64.whl
-
 # Expose port for TensorBoard
 EXPOSE 6006
 
@@ -107,6 +106,23 @@ RUN apt-get install -y --no-install-recommends default-jdk
 # Keras
 #
 RUN pip install keras
+
+#
+# Bazel
+#
+# Add apt-get custom repository
+RUN echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list && \
+    curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
+# Updat apt-get and install Bazel
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends bazel
+# Workarounds to allow Bazel to run in Docker:
+# 1. Sandboxing issue: https://github.com/bazelbuild/bazel/issues/134
+# 2. Limit memory to avoid out of memory errors.
+# 3. Supress unsupported sandboxing warning.
+RUN echo "startup --batch" >> /root/.bazelrc && \
+    echo "build --local_resources 2048,1,1" >> /root/.bazelrc && \
+    echo "build --ignore_unsupported_sandboxing" >> /root/.bazelrc
 
 #
 # Cleanup
