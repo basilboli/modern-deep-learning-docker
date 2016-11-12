@@ -125,6 +125,23 @@ RUN echo "startup --batch" >> /root/.bazelrc && \
     echo "build --ignore_unsupported_sandboxing" >> /root/.bazelrc
 
 #
+# Tensorflow Source code
+#
+# Source code needed to compile C++ or to use some tools not available in the PIP install yet.
+# Version v0.11.0 has a bug that treaks compiling, so using master branch instead.
+# https://github.com/tensorflow/tensorflow/issues/5143
+RUN git clone -b master --recursive --depth 1 https://github.com/tensorflow/tensorflow.git /root/tensorflow
+# Swig. Needed to compile Tensorflow.
+RUN apt-get install -y --no-install-recommends swig
+# Run ./configure in tensorflow folder. Required to compile Tensorflow.
+# Typically this is done manually. But here we simulate it to automate the process.
+# We set the python3 paths, disable GPU, skip Google Cloud services, and skip Hadoop. 
+WORKDIR /root/tensorflow
+RUN echo "/usr/bin/python3\n\n\n/usr/local/lib/python3.5/dist-packages/\n\n" | ./configure
+# Compile. No need to bulid the pip package because we already installed Tensorflow earlier.
+RUN bazel build -c opt //tensorflow/tools/pip_package:build_pip_package
+
+#
 # Cleanup
 #
 RUN apt-get clean && \
