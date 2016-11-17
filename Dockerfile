@@ -118,11 +118,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends bazel
 # Workarounds to allow Bazel to run in Docker:
 # 1. Sandboxing issue: https://github.com/bazelbuild/bazel/issues/134
-# 2. Limit memory to avoid out of memory errors.
-# 3. Supress unsupported sandboxing warning.
+# 2. Limit memory usage to avoid out of memory errors.
 RUN echo "startup --batch" >> /root/.bazelrc && \
-    echo "build --local_resources 2048,1,1" >> /root/.bazelrc && \
-    echo "build --ignore_unsupported_sandboxing" >> /root/.bazelrc
+    echo "build --spawn_strategy=standalone --genrule_strategy=standalone" >> /root/.bazelrc && \
+    echo "build --local_resources 2048,1,1" >> /root/.bazelrc
 
 #
 # Tensorflow Source code
