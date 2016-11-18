@@ -121,7 +121,7 @@ RUN apt-get update && \
 # 2. Limit memory usage to avoid out of memory errors.
 RUN echo "startup --batch" >> /root/.bazelrc && \
     echo "build --spawn_strategy=standalone --genrule_strategy=standalone" >> /root/.bazelrc && \
-    echo "build --local_resources 2048,1,1" >> /root/.bazelrc
+    echo "build --local_resources 3072,1,1" >> /root/.bazelrc
 
 #
 # Tensorflow Source code
